@@ -65,17 +65,20 @@ if tput setaf 1 &> /dev/null; then
 	tput sgr0; # reset colors
 	bold=$(tput bold);
 	reset=$(tput sgr0);
-	# Solarized colors, taken from http://git.io/solarized-colors.
-	black=$(tput setaf 0);
-	blue=$(tput setaf 33);
-	cyan=$(tput setaf 37);
-	green=$(tput setaf 64);
-	orange=$(tput setaf 166);
-	purple=$(tput setaf 125);
-	red=$(tput setaf 124);
-	violet=$(tput setaf 61);
-	white=$(tput setaf 15);
-	yellow=$(tput setaf 136);
+    # Kazuma-desu colors
+    blue=$(tput setaf 39);
+    red=$(tput setaf 9);
+    green=$(tput setaf 47);
+    grey=$(tput setaf 253)
+	yellow=$(tput setaf 220);
+    pink=$(tput setaf 208);
+    # Solarized colors, taken from http://git.io/solarized-colors.
+    black=$(tput setaf 0);
+    cyan=$(tput setaf 37);
+    orange=$(tput setaf 166);
+    purple=$(tput setaf 125);
+    violet=$(tput setaf 61);
+    white=$(tput setaf 15);
 else
 	bold='';
 	reset="\e[0m";
@@ -93,29 +96,38 @@ fi;
 
 # Highlight the user name when logged in as root.
 if [[ "${USER}" == "root" ]]; then
-	userStyle="${red}";
+    arrow_1="\[${bold}\]\[${red}\]|\[${reset}\]";
+    arrow_2="\[${blod}\]\[${red}\]＞\[${reset}\]";
+    prompt="\[${red}\]#"
 else
-	userStyle="${orange}";
+    arrow_1="\[${bold}\]\[${blue}\]|\[${reset}\]";
+    arrow_2="\[${bold}\]\[${green}\]＞\[${reset}\]";
+    prompt="\[${white}\]\$"
 fi;
 
 # Highlight the hostname when connected via SSH.
 if [[ "${SSH_TTY}" ]]; then
-	hostStyle="${bold}${red}";
+    hostStyle="${bold}${red}";
 else
-	hostStyle="${yellow}";
+    hostStyle="${yellow}";
 fi;
 
+# Colored unicode character for git prompt
+# U+2387 ALTERNATIVE KEY SYMBOL
+# You may need to patch your font used in terminal
+# Or adjust whitespaces for this to display correctly
 # Set the terminal title and prompt.
-PS1="\[\033]0;\W\007\]"; # working directory base name
-PS1+="\[${bold}\]\n"; # newline
-PS1+="\[${userStyle}\]\u"; # username
-PS1+="\[${white}\] at ";
-PS1+="\[${hostStyle}\]\h"; # host
-PS1+="\[${white}\] in ";
-PS1+="\[${green}\]\w"; # working directory full path
-PS1+="\$(prompt_git \"\[${white}\] on \[${violet}\]\" \"\[${blue}\]\")"; # Git repository details
-PS1+="\n";
-PS1+="\[${white}\]\$ \[${reset}\]"; # `$` (and reset color)
+
+PS1="\[\033]0;\W\007\]"; # working directory fullpath
+PS1+="\n"; # newline
+PS1+="\[${grey}\]HP-Ultrabox"; # Host?
+PS1+=" $arrow_1 " ;
+PS1+="\[${yellow}\]\u"; # username
+PS1+=" $arrow_2 " ;
+PS1+="\[${pink}\]\W"; # working directory basename
+PS1+="\$(prompt_git \"\[${white}\] ⎇  \[${violet}\]\" \"\[${blue}\]\")"; # Git repository details
+# PS1+="\n";
+PS1+=" $prompt \[${reset}\]"; # `$` (and reset color)
 export PS1;
 
 PS2="\[${yellow}\]→ \[${reset}\]";
