@@ -1,0 +1,3 @@
+
+# Cargo
+. "$HOME/.cargo/env"
