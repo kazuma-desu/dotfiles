@@ -72,7 +72,3 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # Envman configuration
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
-# Start Zellij on shell login (keep at end)
-if command -v zellij &> /dev/null; then
-  [[ -z "$ZELLIJ" ]] && exec zellij --layout compact
-fi
