@@ -3,11 +3,14 @@
 # =============================================================================
 
 # ls Aliases
-alias ls='exa --icons -F -H --group-directories-first --git -1'
+alias ls='exa --icons -F -H --group-directories-first --git'
 alias l='exa'
-alias la='exa -a'
-alias ll='exa -lah'
-alias ls='ls --color'
+alias la='exa -a --icons'
+alias ll='exa -lao --smart-group --icons'
+alias lt='exa -laT --icons'
+alias lr='exa -laR --icons'
+alias ld='exa -la --total-size --icons'
+
 
 # Alternative Commands
 alias cat='bat --style=plain'
