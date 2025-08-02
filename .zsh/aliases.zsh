@@ -3,13 +3,13 @@
 # =============================================================================
 
 # ls Aliases
-alias ls='exa --icons -F -H --group-directories-first --git'
-alias l='exa'
-alias la='exa -a --icons'
-alias ll='exa -lao --smart-group --icons'
-alias lt='exa -laT --icons'
-alias lr='exa -laR --icons'
-alias ld='exa -la --total-size --icons'
+alias ls='eza --icons -F -H --group-directories-first --git'
+alias l='eza'
+alias la='eza -a --icons'
+alias ll='eza -lao --smart-group --icons'
+alias lt='eza -laT --icons'
+alias lr='eza -laR --icons'
+alias ld='eza -la --total-size --icons'
 
 
 # Alternative Commands
