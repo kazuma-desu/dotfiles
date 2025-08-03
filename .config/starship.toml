@@ -1,7 +1,7 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
-[](fg:red bg:red)\
+[](fg:red bg:surface0)\
 [](fg:red bg:peach)\
 [](fg:peach bg:yellow)\
 [](fg:yellow bg:green)\
@@ -185,10 +185,10 @@ style = "bg:color_bg3"
 format = '[[ $symbol( $context) ](fg:#83a598 bg:color_bg3)]($style)'
 
 [hostname]
-ssh_only = false
+ssh_only = true
 ssh_symbol = " "
 style = "bg:red fg:text"
-format = '[on $hostname](fg:base bg:red)'
+format = '[ $ssh_symbol$hostname ]($style)'
 trim_at = '.companyname.com'
 disabled = false
 
@@ -286,6 +286,7 @@ MidnightBSD = " "
 Mint = " "
 NetBSD = " "
 NixOS = " "
+Nobara = " "
 OpenBSD = "󰈺 "
 openSUSE = " "
 OracleLinux = "󰌷 "
