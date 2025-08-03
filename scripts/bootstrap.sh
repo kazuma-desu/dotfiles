@@ -10,48 +10,144 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Install Rust and Cargo first (needed for many other tools)
-if ! command_exists cargo; then
-    echo "Installing Rust..."
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    source "$HOME/.cargo/env"
+# Function to detect OS and package manager
+detect_os() {
+    if [ -f /etc/os-release ]; then
+        # freedesktop.org and systemd
+        . /etc/os-release
+        OS=$NAME
+        VER=$VERSION_ID
+        PM=""
+
+        # Determine package manager based on OS
+        case $ID in
+            ubuntu|debian|pop|kali|raspbian)
+                PM="apt"
+                ;;
+            fedora|rhel|centos)
+                if command_exists dnf; then
+                    PM="dnf"
+                else
+                    PM="yum"
+                fi
+                ;;
+            arch|manjaro|endeavouros|garuda)
+                PM="pacman"
+                ;;
+            opensuse|sles)
+                PM="zypper"
+                ;;
+            alpine)
+                PM="apk"
+                ;;
+            gentoo)
+                PM="emerge"
+                ;;
+            *)
+                # Fallback to checking for package managers directly
+                if command_exists apt; then
+                    PM="apt"
+                elif command_exists dnf; then
+                    PM="dnf"
+                elif command_exists yum; then
+                    PM="yum"
+                elif command_exists pacman; then
+                    PM="pacman"
+                elif command_exists zypper; then
+                    PM="zypper"
+                elif command_exists apk; then
+                    PM="apk"
+                elif command_exists emerge; then
+                    PM="emerge"
+                else
+                    echo "Cannot determine package manager for your system"
+                    exit 1
+                fi
+                ;;
+        esac
+    else
+        # Fallback to checking for package managers directly
+        if command_exists apt; then
+            PM="apt"
+        elif command_exists dnf; then
+            PM="dnf"
+        elif command_exists yum; then
+            PM="yum"
+        elif command_exists pacman; then
+            PM="pacman"
+        elif command_exists zypper; then
+            PM="zypper"
+        elif command_exists apk; then
+            PM="apk"
+        elif command_exists emerge; then
+            PM="emerge"
+        else
+            echo "Cannot determine package manager for your system"
+            exit 1
+        fi
+    fi
+
+    echo "Detected OS: $OS"
+    echo "Using package manager: $PM"
+}
+
+# Run the language and SDK managers installation script first
+if [ -f "./install-languages.sh" ]; then
+    echo "Running language and SDK managers installation script..."
+    bash ./install-languages.sh
 else
-    echo "Rust is already installed"
+    echo "Language installation script not found. Please run it separately."
+    exit 1
 fi
+
+# Detect OS and package manager
+detect_os
 
 # Array of packages to install
 PACKAGES=("git" "curl" "wget" "zsh" "fzf")
 
-# Function to install packages based on available package manager
+# Function to install packages based on detected package manager
 install_packages() {
     local packages=("$@")
     
-    # Check for various package managers and install accordingly
-    if command_exists apt; then
-        echo "Using apt package manager"
-        sudo apt update
-        sudo apt install -y "${packages[@]}"
-    elif command_exists pacman; then
-        echo "Using pacman package manager"
-        sudo pacman -Syu --noconfirm
-        sudo pacman -S --noconfirm "${packages[@]}"
-    elif command_exists dnf; then
-        echo "Using dnf package manager"
-        sudo dnf install -y "${packages[@]}"
-    elif command_exists yum; then
-        echo "Using yum package manager"
-        sudo yum install -y "${packages[@]}"
-    elif command_exists zypper; then
-        echo "Using zypper package manager"
-        sudo zypper install -y "${packages[@]}"
-    elif command_exists emerge; then
-        echo "Using portage package manager"
-        sudo emerge --ask=n "${packages[@]}"
-    else
-        echo "No supported package manager found. Please install packages manually:"
-        printf '%s\n' "${packages[@]}"
-        exit 1
-    fi
+    case $PM in
+        apt)
+            echo "Using apt package manager"
+            sudo apt update
+            sudo apt install -y "${packages[@]}"
+            ;;
+        pacman)
+            echo "Using pacman package manager"
+            sudo pacman -Syu --noconfirm
+            sudo pacman -S --noconfirm "${packages[@]}"
+            ;;
+        dnf)
+            echo "Using dnf package manager"
+            sudo dnf install -y "${packages[@]}"
+            ;;
+        yum)
+            echo "Using yum package manager"
+            sudo yum install -y "${packages[@]}"
+            ;;
+        zypper)
+            echo "Using zypper package manager"
+            sudo zypper install -y "${packages[@]}"
+            ;;
+        apk)
+            echo "Using apk package manager"
+            sudo apk add "${packages[@]}"
+            ;;
+        emerge)
+            echo "Using portage package manager"
+            sudo emerge --ask=n "${packages[@]}"
+            ;;
+        *)
+            echo "Unsupported package manager: $PM"
+            echo "Please install packages manually:"
+            printf '%s\n' "${packages[@]}"
+            exit 1
+            ;;
+    esac
 }
 
 # Check and install system packages
@@ -71,26 +167,6 @@ if [ ${#PACKAGES_TO_INSTALL[@]} -gt 0 ]; then
     install_packages "${PACKAGES_TO_INSTALL[@]}"
 else
     echo "All system packages are already installed"
-fi
-
-# Install NVM (Node Version Manager)
-if [ ! -d "$HOME/.nvm" ]; then
-    echo "Installing NVM..."
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    nvm install --lts  # Install latest LTS version of Node.js
-else
-    echo "NVM is already installed"
-fi
-
-# Install SDKMAN
-if [ ! -d "$HOME/.sdkman" ]; then
-    echo "Installing SDKMAN..."
-    curl -s "https://get.sdkman.io" | bash
-    source "$HOME/.sdkman/bin/sdkman-init.sh"
-else
-    echo "SDKMAN is already installed"
 fi
 
 # Array of Cargo packages to install (including zoxide, atuin, starship, and zellij)
@@ -116,7 +192,6 @@ else
 fi
 
 # Make the script executable
-chsh -s "$(which zsh)"
 chmod +x ~/.zshrc
 
 echo "Installation complete! Please restart your shell or run 'source ~/.zshrc'"
