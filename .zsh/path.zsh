@@ -8,6 +8,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$PATH:/opt/nvim/bin"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
+export PATH="$HOME/src/flutter/bin:$PATH"
 
 # Tool-specific paths
 export PATH="$HOME/.linkerd2/bin:$PATH"

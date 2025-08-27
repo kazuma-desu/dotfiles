@@ -4,7 +4,10 @@ return {
     event = 'BufWritePre', -- uncomment for format on save
     opts = require "configs.conform",
   },
-
+  {
+    'Exafunction/windsurf.vim',
+    event = 'BufEnter'
+  },
   -- These are some examples, uncomment them if you want to see them work!
   {
     "neovim/nvim-lspconfig",

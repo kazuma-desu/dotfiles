@@ -38,6 +38,7 @@ source_config ~/.zsh/plugins.zsh "Plugins"               # Plugins need to be lo
 source_config ~/.zsh/options.zsh "Options"               # History settings
 source_config ~/.zsh/completion.zsh "Completion"         # Completion settings and keybindings
 source_config ~/.zsh/aliases.zsh "Aliases"               # Load aliases last
+source_config ~/.zsh/functions.zsh "Functions"               # Load aliases last
 
 # =============================================================================
 #                               Final Configurations
@@ -72,3 +73,5 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # Envman configuration
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
+
+PATH=~/.console-ninja/.bin:$PATH
