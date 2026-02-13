@@ -75,3 +75,11 @@ export SDKMAN_DIR="$HOME/.sdkman"
 
 
 PATH=~/.console-ninja/.bin:$PATH
+# opencode
+export PATH=/Users/kavintha.kulasingham/.opencode/bin:$PATH
+
+# bun completions
+[ -s "/Users/kavintha.kulasingham/.bun/_bun" ] && source "/Users/kavintha.kulasingham/.bun/_bun"
+
+# Added by Antigravity
+export PATH="/Users/kavintha.kulasingham/.antigravity/antigravity/bin:$PATH"

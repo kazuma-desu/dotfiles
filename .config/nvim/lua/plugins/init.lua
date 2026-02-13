@@ -1,13 +1,10 @@
 return {
   {
     "stevearc/conform.nvim",
-    event = 'BufWritePre', -- uncomment for format on save
+    -- event = 'BufWritePre', -- uncomment for format on save
     opts = require "configs.conform",
   },
-  {
-    'Exafunction/windsurf.vim',
-    event = 'BufEnter'
-  },
+
   -- These are some examples, uncomment them if you want to see them work!
   {
     "neovim/nvim-lspconfig",
@@ -15,33 +12,20 @@ return {
       require "configs.lspconfig"
     end,
   },
-  "nvim-lua/plenary.nvim",
-  { "nvim-tree/nvim-web-devicons", lazy = true },
+
+  -- test new blink
+  -- { import = "nvchad.blink.lazyspec" },
 
   {
-    "nvchad/ui",
-    config = function()
-      require "nvchad"
-    end
+  	"nvim-treesitter/nvim-treesitter",
+  	opts = {
+  		ensure_installed = {
+  			"vim", "lua", "vimdoc",
+       "html", "css"
+  		},
+  	},
+  	config = function(_, opts)
+  		require("nvim-treesitter.config").setup(opts)
+  	end,
   },
-  {
-    "nvchad/base46",
-    lazy = true,
-    build = function()
-      require("base46").load_all_highlights()
-    end,
-  },
-
-  "nvchad/volt", -- optional, needed for theme switcher
-  -- or just use Telescope themes
-
-  -- {
-  -- 	"nvim-treesitter/nvim-treesitter",
-  -- 	opts = {
-  -- 		ensure_installed = {
-  -- 			"vim", "lua", "vimdoc",
-  --      "html", "css"
-  -- 		},
-  -- 	},
-  -- },
 }
