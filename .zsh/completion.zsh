@@ -14,6 +14,3 @@ bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
-
-# Bun completions
-[ -s "/home/kavintha/.bun/_bun" ] && source "/home/kavintha/.bun/_bun"
