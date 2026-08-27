@@ -6,3 +6,13 @@ I manage the various configuration files in this repo using GNU Stow. This allow
 ```
 stow .
 ```
+
+bootstrap (arch linux)
+
+To set up a fresh machine, run the bootstrap script:
+
+```
+./scripts/bootstrap_arch.sh
+```
+
+It installs gum, system packages via pacman, the bin binary manager (scripts/tools/), language runtimes (scripts/languages/), and CLI tools via bin.
