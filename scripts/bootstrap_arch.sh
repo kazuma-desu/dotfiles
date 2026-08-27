@@ -3,10 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
+source "$SCRIPT_DIR/lib/common.sh"
 
 print_header() {
     gum style --foreground 212 --border-foreground 212 --border double --align center --width 50 --margin "1 2" --padding "1 4" "$1"
@@ -54,7 +51,7 @@ echo ""
 print_header "Arch Linux Dotfiles Bootstrap"
 echo ""
 
-PACKAGES=("git" "curl" "wget" "zsh")
+PACKAGES=("git" "curl" "wget" "zsh" "stow")
 
 print_step "Step 1: Checking system packages..."
 PACKAGES_TO_INSTALL=()
@@ -102,8 +99,9 @@ echo ""
 print_header "Bootstrap Complete!"
 echo ""
 gum style --foreground 99 "Next steps:"
-gum style --foreground 240 "  1. Restart your shell or run: source ~/.zshrc"
-gum style --foreground 240 "  2. If you installed new languages, you may need to:"
+gum style --foreground 240 "  1. Link your dotfiles: cd ~/.dotfiles && stow ."
+gum style --foreground 240 "  2. Restart your shell or run: source ~/.zshrc"
+gum style --foreground 240 "  3. If you installed new languages, you may need to:"
 gum style --foreground 240 "     - Rust: source ~/.cargo/env"
 gum style --foreground 240 "     - Node.js: restart your shell (fnm loads automatically via .zshrc)"
 gum style --foreground 240 "     - SDKMAN: source ~/.sdkman/bin/sdkman-init.sh"
