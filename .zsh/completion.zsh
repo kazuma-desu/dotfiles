@@ -1,5 +1,10 @@
-# Load completions
-autoload -Uz compinit && compinit
+# Load completions (rebuild dump once per day, otherwise trust the cache)
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
 zinit cdreplay -q
 
 # Completion styling
