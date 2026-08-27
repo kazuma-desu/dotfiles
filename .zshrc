@@ -63,11 +63,6 @@ command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd)"
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
-# Envman configuration
-[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
-
-
-PATH=~/.console-ninja/.bin:$PATH
 # opencode
 export PATH="$HOME/.opencode/bin:$PATH"
 
