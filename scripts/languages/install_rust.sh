@@ -2,36 +2,8 @@
 
 set -euo pipefail
 
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
-# Degrade gracefully when gum is not installed
-if ! command_exists gum; then
-    gum() {
-        local cmd="$1"
-        shift
-        case "$cmd" in
-            style)
-                while [ $# -gt 0 ]; do
-                    case "$1" in
-                        --*=*) shift ;;
-                        --bold|--italic|--faint|--underline|--strikethrough) shift ;;
-                        --*) if [ $# -ge 2 ]; then shift 2; else shift; fi ;;
-                        *) break ;;
-                    esac
-                done
-                printf '%s\n' "$*"
-                ;;
-            spin)
-                while [ $# -gt 0 ] && [ "$1" != "--" ]; do shift; done
-                [ $# -gt 0 ] && shift
-                "$@"
-                ;;
-            *) return 1 ;;
-        esac
-    }
-fi
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../lib/common.sh"
 
 if ! command_exists rustc || ! command_exists cargo; then
     gum style --foreground 99 "Installing Rust via rustup..."

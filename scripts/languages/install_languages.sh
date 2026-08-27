@@ -3,35 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
-# Degrade gracefully when gum is not installed
-if command_exists gum; then
-    HAVE_GUM=1
-else
-    HAVE_GUM=0
-    gum() {
-        local cmd="$1"
-        shift
-        case "$cmd" in
-            style)
-                while [ $# -gt 0 ]; do
-                    case "$1" in
-                        --*=*) shift ;;
-                        --bold|--italic|--faint|--underline|--strikethrough) shift ;;
-                        --*) if [ $# -ge 2 ]; then shift 2; else shift; fi ;;
-                        *) break ;;
-                    esac
-                done
-                printf '%s\n' "$*"
-                ;;
-            *) return 1 ;;
-        esac
-    }
-fi
+source "$SCRIPT_DIR/../lib/common.sh"
 
 install_lang() {
     local lang=$1
