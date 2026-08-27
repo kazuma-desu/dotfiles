@@ -12,6 +12,3 @@ zinit snippet OMZP::aws
 zinit snippet OMZP::kubectl
 zinit snippet OMZP::kubectx
 zinit snippet OMZP::command-not-found
-
-# Plugin specific configurations
-zinit load atuinsh/atuin  # Atuin shell history
