@@ -1,0 +1,27 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y shellcheck zsh stow
+
+      - name: Shellcheck install scripts
+        run: find scripts -name '*.sh' -print0 | xargs -0 shellcheck -S warning
+
+      - name: Syntax check bash scripts
+        run: find scripts -name '*.sh' -print0 | xargs -0 -n1 bash -n
+
+      - name: Syntax check zsh configs
+        run: zsh -n .zshrc .zshenv .zsh/*.zsh
+
+      - name: Stow dry-run (detect link conflicts)
+        run: stow --simulate .
