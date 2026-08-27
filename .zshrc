@@ -7,7 +7,7 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
 # Download Zinit if not present
 if [ ! -d "$ZINIT_HOME" ]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
+   mkdir -p "$(dirname "$ZINIT_HOME")"
    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
@@ -22,7 +22,7 @@ source_config() {
     local file=$1
     local description=$2
     if [[ -f $file ]]; then
-        source $file
+        source "$file"
     else
         echo "\033[33mWarning:\033[0m ${description} configuration not found at ${file}"
     fi
@@ -38,33 +38,26 @@ source_config ~/.zsh/plugins.zsh "Plugins"               # Plugins need to be lo
 source_config ~/.zsh/options.zsh "Options"               # History settings
 source_config ~/.zsh/completion.zsh "Completion"         # Completion settings and keybindings
 source_config ~/.zsh/aliases.zsh "Aliases"               # Load aliases last
-source_config ~/.zsh/functions.zsh "Functions"               # Load aliases last
+source_config ~/.zsh/functions.zsh "Functions"           # Custom functions
 
 # =============================================================================
 #                               Final Configurations
 # =============================================================================
 
-# Atuin shell history
-. "$HOME/.atuin/bin/env"
-eval "$(atuin init zsh)"
+# Atuin shell history (installed via cargo)
+command -v atuin &>/dev/null && eval "$(atuin init zsh)"
 
 # FZF
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-eval "$(fzf --zsh)"
+command -v fzf &>/dev/null && eval "$(fzf --zsh)"
 
 # Zoxide
-eval "$(zoxide init zsh)"
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
 # Starship prompt
-eval "$(starship init zsh)"
+command -v starship &>/dev/null && eval "$(starship init zsh)"
 
-# NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-# Cargo
-. "$HOME/.cargo/env"
+# fnm (Fast Node Manager)
+command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd)"
 
 # SDKMAN
 export SDKMAN_DIR="$HOME/.sdkman"
@@ -76,10 +69,13 @@ export SDKMAN_DIR="$HOME/.sdkman"
 
 PATH=~/.console-ninja/.bin:$PATH
 # opencode
-export PATH=/Users/kavintha.kulasingham/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"
 
 # bun completions
-[ -s "/Users/kavintha.kulasingham/.bun/_bun" ] && source "/Users/kavintha.kulasingham/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
-# Added by Antigravity
-export PATH="/Users/kavintha.kulasingham/.antigravity/antigravity/bin:$PATH"
+# Pi
+export PATH="/home/kazuma/.npm-global/bin:$PATH"
+
+# kimi-code
+export PATH="/home/kazuma/.kimi-code/bin:$PATH"
