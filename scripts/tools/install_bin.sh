@@ -4,49 +4,13 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
-# Degrade gracefully when gum is not installed
-if ! command_exists gum; then
-    gum() {
-        local cmd="$1"
-        shift
-        case "$cmd" in
-            style)
-                while [ $# -gt 0 ]; do
-                    case "$1" in
-                        --*=*) shift ;;
-                        --bold|--italic|--faint|--underline|--strikethrough) shift ;;
-                        --*) if [ $# -ge 2 ]; then shift 2; else shift; fi ;;
-                        *) break ;;
-                    esac
-                done
-                printf '%s\n' "$*"
-                ;;
-            spin)
-                while [ $# -gt 0 ] && [ "$1" != "--" ]; do shift; done
-                [ $# -gt 0 ] && shift
-                "$@"
-                ;;
-            *) return 1 ;;
-        esac
-    }
-fi
-
-case "$(uname -m)" in
-    x86_64) BIN_ARCH="amd64" ;;
-    aarch64|arm64) BIN_ARCH="arm64" ;;
-    *) echo "Unsupported architecture: $(uname -m)"; exit 1 ;;
-esac
+source "$SCRIPT_DIR/../lib/common.sh"
 
 if ! command_exists bin; then
     gum style --foreground 99 "Installing bin (binary manager)..."
 
     TMP_DIR=$(mktemp -d)
-    trap "rm -rf $TMP_DIR" EXIT
+    trap 'rm -rf "$TMP_DIR"' EXIT
 
     gum style --foreground 240 "  Detecting latest version..."
     VERSION=$(curl -s https://api.github.com/repos/marcosnils/bin/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
@@ -57,10 +21,20 @@ if ! command_exists bin; then
     fi
 
     gum style --foreground 240 "  Version: v$VERSION"
-    DOWNLOAD_URL="https://github.com/marcosnils/bin/releases/download/v${VERSION}/bin_${VERSION}_linux_${BIN_ARCH}"
+    ARCHIVE="bin_${VERSION}_linux_${ARCH_GO}"
+    DOWNLOAD_URL="https://github.com/marcosnils/bin/releases/download/v${VERSION}/${ARCHIVE}"
 
     gum spin --spinner dot --title "Downloading bin..." -- \
         curl -sL "$DOWNLOAD_URL" -o "$TMP_DIR/bin"
+
+    gum style --foreground 240 "  Verifying checksum..."
+    curl -sL "https://github.com/marcosnils/bin/releases/download/v${VERSION}/checksums.txt" -o "$TMP_DIR/checksums.txt"
+    EXPECTED=$(grep " ${ARCHIVE}$" "$TMP_DIR/checksums.txt" | awk '{print $1}')
+    if [ -z "$EXPECTED" ]; then
+        echo "Could not find checksum for $ARCHIVE" >&2
+        exit 1
+    fi
+    verify_sha256 "$TMP_DIR/bin" "$EXPECTED"
 
     chmod +x "$TMP_DIR/bin"
 
