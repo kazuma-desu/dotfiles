@@ -40,7 +40,7 @@ alias kgec='kubectl get events --sort-by=.metadata.creationTimestamp'
 
 # Get pod's descending events
 function kger() {
-  kubectl get events --sort-by=.lastTimestamp --field-selector involvedObject.name="$@"
+  kubectl get events --sort-by=.lastTimestamp --field-selector involvedObject.name="$1"
 }
 
 # Resource management
