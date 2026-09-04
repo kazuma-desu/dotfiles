@@ -27,15 +27,15 @@ if ! command_exists go; then
             awk -v target="$GO_ARCHIVE" '
                 $1 == "\"filename\":" {
                     filename = $2
-                    gsub(/[\",]/, "", filename)
+                    gsub(/[",]/, "", filename)
                     matched = (filename == target)
                     next
                 }
                 matched && $1 == "\"sha256\":" {
                     checksum = $2
-                    gsub(/[\",]/, "", checksum)
+                    gsub(/[",]/, "", checksum)
                     print checksum
-                    exit
+                    matched = 0
                 }
             '
     )
