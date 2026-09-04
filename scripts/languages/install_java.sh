@@ -27,6 +27,16 @@ init_sdkman() {
     return "$sdkman_status"
 }
 
+run_sdkman() {
+    # SDKMAN's shell functions also read optional positional parameters.
+    local sdkman_status=0
+    set +u
+    sdkman_auto_answer=true sdk "$@" || sdkman_status=$?
+    set -u
+
+    return "$sdkman_status"
+}
+
 if [ ! -d "$HOME/.sdkman" ]; then
     gum style --foreground 99 "Installing SDKMAN..."
     gum spin --spinner dot --title "Downloading and installing SDKMAN..." -- \
@@ -40,7 +50,7 @@ init_sdkman
 
 if ! command_exists java; then
     gum style --foreground 99 "Installing Java $JAVA_VERSION via SDKMAN (this may take a while)..."
-    sdkman_auto_answer=true sdk install java "$JAVA_VERSION"
+    run_sdkman install java "$JAVA_VERSION"
     gum style --foreground 212 "✓ Java installed successfully!"
 else
     gum style --foreground 240 "Java is already installed ($(java -version 2>&1 | head -1))"
