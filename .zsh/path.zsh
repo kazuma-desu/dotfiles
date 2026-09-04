@@ -7,7 +7,6 @@
 typeset -U path PATH
 
 # Core paths
-export PATH="$HOME/.local/bin:$PATH"
 export PATH="/opt/nvim/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/src/flutter/bin:$PATH"
