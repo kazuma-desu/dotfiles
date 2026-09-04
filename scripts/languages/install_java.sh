@@ -10,7 +10,21 @@ JAVA_VERSION="${JAVA_VERSION:-21.0.5-tem}"
 
 init_sdkman() {
     export SDKMAN_DIR="$HOME/.sdkman"
-    [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+
+    if [[ ! -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]]; then
+        echo "SDKMAN initialization script not found" >&2
+        return 1
+    fi
+
+    # SDKMAN references optional shell variables such as ZSH_VERSION.
+    # Temporarily disable nounset while loading its initialization script.
+    local sdkman_status=0
+    set +u
+    # shellcheck disable=SC1090
+    source "$SDKMAN_DIR/bin/sdkman-init.sh" || sdkman_status=$?
+    set -u
+
+    return "$sdkman_status"
 }
 
 if [ ! -d "$HOME/.sdkman" ]; then
