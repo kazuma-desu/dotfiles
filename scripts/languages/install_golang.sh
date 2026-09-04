@@ -8,19 +8,43 @@ source "$SCRIPT_DIR/../lib/common.sh"
 if ! command_exists go; then
     gum style --foreground 99 "Installing Go..."
 
-    GO_VERSION=$(curl -s https://go.dev/VERSION?m=text | head -1)
+    GO_VERSION=$(curl -fsSL "https://go.dev/VERSION?m=text" | sed -n '1p')
 
     if [ -z "$GO_VERSION" ]; then
-        echo "Failed to fetch Go version"
+        echo "Failed to fetch Go version" >&2
         exit 1
     fi
 
+    GO_ARCHIVE="${GO_VERSION}.linux-${ARCH_GO}.tar.gz"
+
     gum style --foreground 240 "  Version: $GO_VERSION"
     gum spin --spinner dot --title "Downloading Go..." -- \
-        wget -q --show-progress -O /tmp/go.tar.gz "https://dl.google.com/go/$GO_VERSION.linux-$ARCH_GO.tar.gz"
+        wget -q --show-progress -O /tmp/go.tar.gz "https://dl.google.com/go/$GO_ARCHIVE"
 
     gum style --foreground 240 "  Verifying checksum..."
-    EXPECTED=$(curl -s "https://go.dev/dl/${GO_VERSION}.linux-${ARCH_GO}.sha256")
+    EXPECTED=$(
+        curl -fsSL "https://go.dev/dl/?mode=json" |
+            awk -v target="$GO_ARCHIVE" '
+                $1 == "\"filename\":" {
+                    filename = $2
+                    gsub(/[\",]/, "", filename)
+                    matched = (filename == target)
+                    next
+                }
+                matched && $1 == "\"sha256\":" {
+                    checksum = $2
+                    gsub(/[\",]/, "", checksum)
+                    print checksum
+                    exit
+                }
+            '
+    )
+
+    if [[ ! "$EXPECTED" =~ ^[0-9a-f]{64}$ ]]; then
+        echo "Failed to fetch a valid checksum for $GO_ARCHIVE" >&2
+        exit 1
+    fi
+
     verify_sha256 /tmp/go.tar.gz "$EXPECTED"
 
     rm -rf ~/.local/go
