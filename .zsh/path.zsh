@@ -3,8 +3,8 @@
 #                               Path Configuration
 # =============================================================================
 
-# Deduplicate PATH entries (zsh ties the path array to PATH)
-typeset -U path PATH
+# Deduplicate PATH entries globally (this file is sourced from a function)
+typeset -gU path PATH
 
 # Core paths
 export PATH="/opt/nvim/bin:$PATH"
